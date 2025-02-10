@@ -1106,7 +1106,7 @@ SMODS.Joker {
 --        ['en-us'] = {
 --            name = "Huh? A 7!:",
 --            text = {
---                "All Probabilities’s denominators are increased by 1",
+--                "All Probabilitiesï¿½s denominators are increased by 1",
 --                "{C:inactive}(ex: {C:green}1/3{}{C:inactive} -> {C:green}1/4{}{C:inactive})",
 --            }
 --        }
@@ -1707,16 +1707,6 @@ SMODS.Enhancement {
         return { vars = {self.config.extra.prob, '' .. (G.GAME and G.GAME.probabilities.normal or 1)} }
     end,
     calculate = function(self, card, context)
-        local ret = {}
-        if context.repetition_only then
-            if pseudorandom('platinum_rep') < G.GAME.probabilities.normal/3 then
-                local seals = card:calculate_seal(context)
-                if seals then
-                    ret.seals = seals
-                end
-                return ret
-            end
-        end
         if context.cardarea == G.play then
             if pseudorandom('platinum_prob') < G.GAME.probabilities.normal/15 then
                 for k, v in pairs(G.GAME.probabilities) do 
@@ -1729,6 +1719,28 @@ SMODS.Enhancement {
         end
     end
 }
+cs = Card.calculate_seal
+function Card:calculate_seal(context)
+    local ret = cs(self, context)
+    if context.repetition then
+        local total_repetitions = ret and ret.repetitions or 0
+
+        if self.config.center == G.P_CENTERS.m_snow_platinum_card then
+            if pseudorandom('platinum_rep') < G.GAME.probabilities.normal/6 then
+                total_repetitions = total_repetitions + 1
+            end
+        end
+
+        if total_repetitions > 0 then
+            return {
+                message = localize("k_again_ex"),
+                repetitions = total_repetitions,
+                card = self,
+            }
+        end
+    end
+    return ret
+end
 
 -- Augmentations
 --SMODS.Atlas { key = 'Augment', path = 'Augmentations.png', px = 53, py = 63 }
