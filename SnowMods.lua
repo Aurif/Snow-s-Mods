@@ -1591,7 +1591,7 @@ SMODS.Joker {
             if context.retrigger_joker_check and not context.retrigger_joker then
 				return {
 					message = localize('k_again_ex'),
-					repetitions = self.config.num_retriggers,
+					repetitions = self.config.extra.num_retriggers,
 					card = card
 				}
 		    end
